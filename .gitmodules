@@ -1,0 +1,8 @@
+[submodule "workflow/pypsa-earth"]
+	path = workflow/pypsa-earth
+	url = https://github.com/AlexanderMeisinger/pypsa-earth.git
+	branch = fepbe
+[submodule "workflow/pypsa-eur"]
+	path = workflow/pypsa-eur
+	url = https://github.com/AlexanderMeisinger/pypsa-eur.git
+	branch = fepbe
