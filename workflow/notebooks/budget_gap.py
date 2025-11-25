@@ -1,4 +1,4 @@
-# Anlyse budget gap of supply demand curve
+# Analyse budget gap of supply demand curve
 
 # Import packages
 import numpy as np
