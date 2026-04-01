@@ -45,8 +45,8 @@ run:
 scenario:
   simpl: [""]
   ll: ["vopt"] 
-  clusters: [12]
-  opts: [Co2L0.15-3H]
+  clusters: [15] # [15] H2 Conversion; [16] No H2 conversion
+  opts: [Co2L0.10-3H]
   planning_horizons: # investment years for myopic and perfect; or costs year for overnight
   - 2050
   sopts:
@@ -54,7 +54,7 @@ scenario:
   demand:
   - "NZ"
   eopts: # export wildcard, which enables export and allows to apply scaling factors v for volume and m for price. Examples: ["","H2v1.0", "H2m1.0+H2v1.0", "H2m1.0+NH3m1.0+FTm1.0+H2v1.0+NH3v1.0+FTv1.0"]
-  #- ""
+  - ""
   - "LH2v25"
   - "NH3v25"
   - "MEOHv25"
@@ -64,6 +64,12 @@ scenario:
   - "LH2v75"
   - "NH3v75"
   - "MEOHv75"
+  - "LH2v200"
+  - "NH3v200"
+  - "MEOHv200"
+  - "LH2v400"
+  - "NH3v400"
+  - "MEOHv400"
 
 snapshots:
   start: "2013-01-01"
@@ -100,8 +106,8 @@ cluster_options:
     exclude_carriers: []
     remove_stubs: false
     remove_stubs_across_borders: true
-    p_threshold_drop_isolated: 20 # [MW] isolated buses are being discarded if bus mean power is below the specified threshold
-    p_threshold_merge_isolated: 300 # [MW] isolated buses are being merged into a single isolated bus if a bus mean power is below the specified threshold
+    p_threshold_drop_isolated: 1 # [MW] isolated buses are being discarded if bus mean power is below the specified threshold
+    p_threshold_merge_isolated: 1 # [MW] isolated buses are being merged into a single isolated bus if a bus mean power is below the specified threshold
     s_threshold_fetch_isolated: false # [-] a share of the national load for merging an isolated network into a backbone network
   cluster_network:
     algorithm: kmeans
@@ -191,8 +197,8 @@ co2_budget:
 electricity:
   base_voltage: 380.
   voltages: [132., 220., 300., 380., 500., 750.]
-  co2limit: 7.75e+7 # European default, 0.05 * 3.1e9*0.5, needs to be adjusted for Africa
-  co2base: 2.74e+6 # European default, adjustment to Africa necessary
+  co2limit: 7.75e+7 # see paper
+  co2base: 4.38e+6 # see paper
   agg_p_nom_limits: data/agg_p_nom_minmax.csv
   hvdc_as_lines: false # should HVDC lines be modeled as `Line` or as `Link` component?
   automatic_emission: false
@@ -401,7 +407,7 @@ renewable:
 costs:
   year: 2050 # cost file selection, i.e. costs_2030.csv in this case; reference year for costs is always 2020
   technology_data_version: v0.13.2
-  discountrate: [0.09] #, 0.086, 0.111]
+  discountrate: [0.09] # [0.08, 0.09, 0.1]
   country_specific_data: "" # (optional) Reference to the desired technology-data directory for techno-economic input data; Only "" and "US" supported, for other values check the technology-data output directory
   # Only needed if "US" is selected as `country_specific_data`, otherwise ignore
   cost_scenario: "moderate" # only used if `country_specific_data: "US"`; can be "moderate", "advanced" or "conservative"
@@ -411,7 +417,7 @@ costs:
   default_exchange_rate: 0.7532 # previously USD2013_to_EUR2013; should be sufficient as current data from 'technology-data` are either in EUR or USD; [EUR/USD] ECB: https://www.ecb.europa.eu/stats/exchange/eurofxref/html/eurofxref-graph-usd.en.html
   future_exchange_rate_strategy: "reference" # reference uses the exchange rate from `reference_year` for all conversions, ensuring all costs are expressed in the same currency and year; "latest" uses the yearly average of the latest available exchange rates for the selected `output_currency`; "custom" allows to specify a `custom_future_exchange_rate` below
   custom_future_exchange_rate: None # if `future_exchange_rate_strategy: "custom"`, please insert here the desired output_currency-to-EUR exchange rate
-  rooftop_share: 0.14 # based on the potentials, assuming (0.1 kW/m2 and 10 m2/person)
+  rooftop_share: 0.05 # own assumption
   fill_values:
     FOM: 0
     VOM: 0
@@ -420,7 +426,7 @@ costs:
     investment: 0
     lifetime: 25
     CO2 intensity: 0
-    discount rate: 0.07
+    discount rate: 0.09 # [0.08, 0.09, 0.1]
   marginal_cost: # EUR/MWh
     solar: 0.01
     onwind: 0.015
@@ -485,7 +491,7 @@ monte_carlo:
 
 policy_config:
   hydrogen:
-    temporal_matching: "hour" #either "hour", "month", "year", "no_temporal_matching"
+    temporal_matching: "year" #either "hour", "month", "year", "no_temporal_matching"
     spatial_matching: false
     temporal_matching_carriers: [csp, solar, onwind, offwind-ac, offwind-dc, ror, hydro]
     matching_technologies: ["H2 Electrolysis", "Alkaline electrolyzer large", "Alkaline electrolyzer medium", "Alkaline electrolyzer small", "PEM electrolyzer", "SOEC"]
@@ -520,6 +526,8 @@ export:
     LH2: 1
     NH3: 1
     MEOH: 1
+  co2_source:
+    MEOH: "DAC" #  ["all", "DAC"] # annual balance of co2 source for methanol export
   store: False # [True, False] # specifies whether an export store to balance demand is implemented
   store_capital_costs: "no_costs" # ["standard_costs", "no_costs"] # specifies the costs of the export store. "standard_costs" takes CAPEX of "hydrogen storage tank type 1 including compressor"
   export_profile: "constant" # use "ship" or "constant". Only considered, if ["export"]["endogenous"] is set to false
@@ -537,8 +545,9 @@ export:
     ship_fill_time: 24 # based on ship config (export)
     ship_unload_time: 24 # based on ship config (export)
     MWh_NH3_per_MWh_H2: 1.26 # https://doi.org/10.1016/j.ijhydene.2024.10.045
+    # info: invest_NH3_per_H2: technology data 2050, also for 2030
     MWh_LH2_per_MWh_H2: 1 # https://doi.org/10.1109/EEM64765.2025.11050281
-    MWh_MEOH_per_MWh_H2: 1.43 # https://doi.org/10.1016/j.ijhydene.2024.10.045
+    MWh_MEOH_per_MWh_H2: 1.201 # technology data
     # info: export carrier according to wildcard
 
 custom_data:
@@ -675,8 +684,8 @@ sector:
 
   biomass_transport: false # biomass transport between nodes
   biomass_transport_default_cost: 0.1 #EUR/km/MWh
-  solid_biomass_potential: 5.7 # 40 # TWh/a, Potential of whole modelled area
-  biogas_potential: 0.2 # 0.5 # TWh/a, Potential of whole modelled area
+  solid_biomass_potential: 9 # TWh/a, Potential of whole modelled area
+  biogas_potential: 0.2 # TWh/a, Potential of whole modelled area
 
   efficiency_heat_oil_to_elec: 0.9
   efficiency_heat_biomass_to_elec: 0.9
@@ -722,7 +731,7 @@ sector:
       Co2L0.00: 0.01
 
   land_transport_fuel_cell_share: # 1 means all FCEVs HERE
-  # https://www.iea.org/reports/road-transport#dashboard.
+  # https://www.iea.org/reports/road-transport#dashboard. 
     AB_2030: 0.00
     NZ_2030: 0.01 
     AB_2035: 0.00
@@ -739,12 +748,11 @@ sector:
     NZ_2050: 0.74 
 
   co2_network: false
-  co2_sequestration_potential: 200 # 200 #MtCO2/a sequestration potential for Europe
-  co2_sequestration_cost: 400 #EUR/tCO2 for sequestration of CO2
+  co2_sequestration_potential: 1.90 # see paper
+  co2_sequestration_cost: 560 # p. 3 (https://doi.org/10.1016/j.rser.2024.114944)
   shipping_hydrogen_liquefaction: false
   shipping_average_efficiency: 0.4 #For conversion of fuel oil to propulsion in 2011
 
-  # https://www.iea.org/reports/aviation-and-shipping#dashboard
   shipping_hydrogen_share:
     AP_2030: 0.00
     NZ_2030: 0.00
@@ -752,24 +760,27 @@ sector:
     NZ_2050: 0.00
   shipping_ammonia_share:
     AP_2030: 0.00
-    NZ_2030: 0.00
+    NZ_2030: 0.10 # Assumption (75:25 MeOH:NH3)
     AP_2050: 0.00
-    NZ_2050: 0.50
+    NZ_2050: 0.50 # Assumption (50:50 MeOH:NH3)
   shipping_methanol_share:
     AP_2030: 0.00
-    NZ_2030: 0.30 # PyPSA-Eur
+    NZ_2030: 0.20 # Assumption (75:25 MeOH:NH3)
     AP_2050: 0.00
-    NZ_2050: 0.50 # PyPSA-Eur
+    NZ_2050: 0.50 # Assumption (50:50 MeOH:NH3)
   shipping_oil_share:
     AP_2030: 1.00
-    NZ_2030: 0.70 
+    NZ_2030: 0.70 #PyPSA-Eur
     AP_2050: 0.75
     NZ_2050: 0 # PyPSA-Eur
 
   #gadm_level: 1
   h2_cavern: true
   marginal_cost_storage: 0
+
   methanation: true
+  min_part_load_methanolisation: 0.3 # pypsa-eur
+
   methanol: true
   ammonia: true
   h2_liquid: true
@@ -781,10 +792,11 @@ sector:
   airport_sizing_factor: 3
 
   fischer_tropsch: true
-  min_part_load_fischer_tropsch: 0.9
+  min_part_load_fischer_tropsch: 0.5
 
   conventional_generation: # generator : carrier
     OCGT: gas
+    CCGT: gas
     oil: oil
     coal: coal
     lignite: lignite
@@ -821,14 +833,16 @@ solving:
       parallel: "on"
       random_seed: 123
     gurobi-default:
-      threads: 32
+      threads: 8
       method: 2 # barrier
       crossover: 0
       BarConvTol: 1.e-5
+      OptimalityTol: 1.e-5
       Seed: 123
       AggFill: 0
       PreDual: 0
       GURO_PAR_BARDENSETHRESH: 200
+      BarHomogeneous: 1
     gurobi-numeric-focus:
       NumericFocus: 3 # Favour numeric stability over speed
       method: 2 # barrier
@@ -862,7 +876,7 @@ solving:
     cbc-default: {} # Used in CI
     glpk-default: {} # Used in CI
 
-  mem: 120000 #memory in MB; 20 GB enough for 50+B+I+H2; 100 GB for 181+B+I+H2
+  mem: 30000 #memory in MB; 20 GB enough for 50+B+I+H2; 100 GB for 181+B+I+H2
 
 
 plotting:
