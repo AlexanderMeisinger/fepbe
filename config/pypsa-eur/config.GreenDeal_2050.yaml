@@ -41,7 +41,6 @@ scenario:
   opts:
   - ''
   sector_opts:
-  - '3H'
   - '3H-imp+H2+0'
   - '3H-imp+H2+10'
   - '3H-imp+H2+20'
@@ -63,6 +62,48 @@ scenario:
   - '3H-imp+H2+180'
   - '3H-imp+H2+190'
   - '3H-imp+H2+200'
+  - '3H-imp+NH3+0'
+  - '3H-imp+NH3+10'
+  - '3H-imp+NH3+20'
+  - '3H-imp+NH3+30'
+  - '3H-imp+NH3+40'
+  - '3H-imp+NH3+50'
+  - '3H-imp+NH3+60'
+  - '3H-imp+NH3+70'
+  - '3H-imp+NH3+80'
+  - '3H-imp+NH3+90'
+  - '3H-imp+NH3+100'
+  - '3H-imp+NH3+110'
+  - '3H-imp+NH3+120'
+  - '3H-imp+NH3+130'
+  - '3H-imp+NH3+140'
+  - '3H-imp+NH3+150'
+  - '3H-imp+NH3+160'
+  - '3H-imp+NH3+170'
+  - '3H-imp+NH3+180'
+  - '3H-imp+NH3+190'
+  - '3H-imp+NH3+200'
+  - '3H-imp+Methanol+0'
+  - '3H-imp+Methanol+10'
+  - '3H-imp+Methanol+20'
+  - '3H-imp+Methanol+30'
+  - '3H-imp+Methanol+40'
+  - '3H-imp+Methanol+50'
+  - '3H-imp+Methanol+60'
+  - '3H-imp+Methanol+70'
+  - '3H-imp+Methanol+80'
+  - '3H-imp+Methanol+90'
+  - '3H-imp+Methanol+100'
+  - '3H-imp+Methanol+110'
+  - '3H-imp+Methanol+120'
+  - '3H-imp+Methanol+130'
+  - '3H-imp+Methanol+140'
+  - '3H-imp+Methanol+150'
+  - '3H-imp+Methanol+160'
+  - '3H-imp+Methanol+170'
+  - '3H-imp+Methanol+180'
+  - '3H-imp+Methanol+190'
+  - '3H-imp+Methanol+200'
   planning_horizons:
   # - 2020
   # - 2030
@@ -82,7 +123,7 @@ snapshots:
 enable:
   retrieve: false
   retrieve_databundle: false
-  retrieve_cost_data: true
+  retrieve_cost_data: false
   build_cutout: false
   retrieve_cutout: false
   drop_leap_day: true
@@ -604,12 +645,20 @@ sector:
     2050: 0
   shipping_methanol_share:
     2020: 0
-    2025: 0.15
-    2030: 0.3
-    2035: 0.5
-    2040: 0.7
-    2045: 0.85
-    2050: 1
+    2025: 0.10
+    2030: 0.20
+    2035: 0.275
+    2040: 0.35
+    2045: 0.425
+    2050: 0.5
+  shipping_ammonia_share: 
+    2020: 0
+    2025: 0.05
+    2030: 0.10
+    2035: 0.225
+    2040: 0.35
+    2045: 0.425
+    2050: 0.5
   shipping_oil_share:
     2020: 1
     2025: 0.85
@@ -619,6 +668,7 @@ sector:
     2045: 0.15
     2050: 0
   shipping_methanol_efficiency: 0.46
+  shipping_ammonia_efficiency: 0.36 # 10% less power compared to diesel (https://iea-amf.org/app/webroot/files/file/other%20publications/Ammonia%20Application%20in%20IC%20Engines.pdf)
   shipping_oil_efficiency: 0.40
   aviation_demand_factor: 1.
   HVC_demand_factor: 1.
@@ -671,10 +721,11 @@ sector:
   allam_cycle_gas: false
   hydrogen_fuel_cell: true
   hydrogen_turbine: true
+  ammonia_turbine: true
   SMR: true
   SMR_cc: true
-  regional_oil_demand: false
-  regional_coal_demand: false
+  regional_oil_demand: true
+  regional_coal_demand: true
   regional_co2_sequestration_potential:
     enable: false
     attribute:
@@ -717,7 +768,7 @@ sector:
       allam: false
     biomass_to_methanol: false
     biomass_to_methanol_cc: false
-  ammonia: regional
+  ammonia: regional_demand
   min_part_load_fischer_tropsch: 0.5
   min_part_load_methanolisation: 0.3
   min_part_load_methanation: 0.3
@@ -843,7 +894,7 @@ industry:
   MWh_elec_per_tNH3_SMR: 0.7
   MWh_H2_per_tNH3_electrolysis: 5.93
   MWh_elec_per_tNH3_electrolysis: 0.2473
-  MWh_NH3_per_MWh_H2_cracker: 1.46 # https://github.com/euronion/trace/blob/44a5ff8401762edbef80eff9cfe5a47c8d3c8be4/data/efficiencies.csv
+  MWh_NH3_per_MWh_H2_cracker: 1.26 # https://doi.org/10.1016/j.ijhydene.2024.10.045
   NH3_process_emissions: 24.5
   petrochemical_process_emissions: 25.5
   #HVC primary/recycling based on values used in Neumann et al https://doi.org/10.1016/j.joule.2023.06.016, linearly interpolated between 2020 and 2050
@@ -900,6 +951,7 @@ industry:
   MWh_elec_per_tCl: 3.6
   MWh_H2_per_tCl: -0.9372
   methanol_production_today: 1.5
+  methanol_demand_today: true
   MWh_elec_per_tMeOH: 0.167
   MWh_CH4_per_tMeOH: 10.25
   MWh_MeOH_per_tMeOH: 5.528
@@ -913,7 +965,7 @@ industry:
 
 # docs in https://pypsa-eur.readthedocs.io/en/latest/configuration.html#costs
 costs:
-  year: 2040
+  year: 2050
   version: v0.13.2
   social_discountrate: 0.02
   fill_values:
