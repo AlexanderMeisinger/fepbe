@@ -6,7 +6,7 @@
 #    - carrier (H2, NH3, Methanol)
 # 3) Choose your year: 2030 and/or 2050
 # 4) Choose your region: Europe and/or Germany
-# 5) Do not forget the path_notebooks and results path in line 101
+# 5) Do not forget the path_notebooks and results path
 
 
 # Import packages
