@@ -1,5 +1,15 @@
 # Analyse supply and demand curves
 
+# How to use
+# 1) Addapt your settings at the beginning
+# 2) Choose your year: 2030 and/or 2050
+# 3) Selection of carrier can be done with following parameters:
+#    - carrier_demand (H2, NH3, Methanol)
+#    - transport_carrier_supply (LH2, NH3, MeOH)
+#    - final_carrier_supply  (H2, NH3, MeOH)
+# 4) Choose your region: Europe and/or Germany
+
+
 # Import packages
 import pypsa
 import matplotlib.pyplot as plt
@@ -13,25 +23,27 @@ import matplotlib.ticker as mticker
 
 # General settings
 years = [2030, 2050]
+wacc = 0.09 # [0.08, 0.09, 0.1]
 prefix = "fepbe"
-carrier = "H2" # Methanol, NH3, H2
-path_analyse_results = f"results/s-d-curve/{prefix}-{carrier}"
+carrier_demand = "H2" # Methanol, NH3, H2
+path_analyse_results = f"results/s-d-curve/{prefix}-{carrier_demand}"
 
 
 # Supply curve settings (PyPSA-Earth)
-transport_carrier = "NH3" # LH2, NH3, MEOH
+transport_carrier_supply = "LH2" # LH2, NH3, MEOH
+final_carrier_supply = "H2" # H2, NH3, MEOH
 path_curves = "notebooks/supply-curve-analysis/fepbe"
-path_supply_curve = f"{path_curves}/supply_curve_{transport_carrier}_3H_inc_fepbe.csv"
+path_supply_curve = f"{path_curves}/supply_curve_{transport_carrier_supply}_{final_carrier_supply}_{wacc}_3H_inc_fepbe.csv"
 
 
 # Demand curve settings (PyPSA-Eur)
 # Scenario and Path Configuration
 regions = ["EU"] # ["DE", "EU"]
-path_demand_curve = f"{path_curves}/demand_curve-{prefix}-{carrier}.csv"
+path_demand_curve = f"{path_curves}/demand_curve-{prefix}-{carrier_demand}.csv"
 
 scenarios = {
-    "config.GreenDeal": f"3H-imp+{carrier}",
-    "config.BAU": f"3H-imp+{carrier}"
+    "config.GreenDeal": f"3H-imp+{carrier_demand}",
+    "config.BAU": f"3H-imp+{carrier_demand}"
     }
 
 plots_region_labels = {"DE": "Germany", "EU": "Europe"}
@@ -51,7 +63,7 @@ def plot_combined_supply_demand_all_years(supply_curve, demand_curve, region, ye
 
     Parameters:
     - supply_curve: DataFrame with supply data (columns: region, year, import_demand, price)
-    - demand_curve: DataFrame with demand data (columns: region, year, scenario, import_H2_demand, price)
+    - demand_curve: DataFrame with demand data (columns: region, year, scenario, import_demand, price)
     - region: str, name of the importing region ("DE" or "EU")
     - years: list of int, e.g., [2030, 2040, 2050]
     - output_path: str, path to folder where the output figure is saved
@@ -104,9 +116,9 @@ def plot_combined_supply_demand_all_years(supply_curve, demand_curve, region, ye
         demand_subset = demand_curve[(demand_curve["year"] == year) & (demand_curve["region"] == region)]
 
         for scenario, df in demand_subset.groupby("scenario"):
-            df = df.sort_values("import_H2_demand")
-            if df["import_H2_demand"].sum() > 0:
-                line, = ax.plot(df["import_H2_demand"], df["price"],
+            df = df.sort_values("import_demand")
+            if df["import_demand"].sum() > 0:
+                line, = ax.plot(df["import_demand"], df["price"],
                                 linestyle="-", linewidth=2, marker="",
                                 label=f"{plots_region_labels[region]} ({scenario})",
                                 color=color_map[scenario])
@@ -115,13 +127,26 @@ def plot_combined_supply_demand_all_years(supply_curve, demand_curve, region, ye
 
         # Labels and layout per subplot
         ax.set_title(f"{year}")
-        ax.set_xlabel("H$_2$ Volume [TWh]")
+
+        if final_carrier_supply == "H2":
+            ax.set_xlabel("Hydrogen volume [TWh]")
+            axes[0].set_ylabel("Hydrogen cost at Europe gate [€/MWh]")
+            axes[0].set_xlim(left=0, right=115)
+            axes[1].set_xlim(left=0, right=578) 
+        if final_carrier_supply == "NH3":
+            ax.set_xlabel("Ammonia volume [TWh]")
+            axes[0].set_ylabel("Ammonia cost at Europe gate [€/MWh]")
+            axes[0].set_xlim(left=0, right=115)
+            axes[1].set_xlim(left=0, right=578) 
+        if final_carrier_supply == "MEOH":
+            ax.set_xlabel("Methanol volume [TWh]")
+            axes[0].set_ylabel("Methanol cost at Europe gate [€/MWh]")
+            axes[0].set_xlim(left=0, right=115)
+            axes[1].set_xlim(left=0, right=578) 
+
         ax.grid(True, linestyle="--", alpha=0.5)
 
-    # Shared y-axis label
-    axes[0].set_ylabel("H$_2$ cost at Europe gate [€/MWh]")
-    axes[0].set_xlim(left=0, right=100)
-    axes[1].set_xlim(left=0, right=578)
+    
 
     # --- Shared legend below all subplots ---
     # Remove duplicates while preserving order
@@ -149,7 +174,7 @@ def plot_combined_supply_demand_all_years(supply_curve, demand_curve, region, ye
     fig.tight_layout(rect=[0, 0.12, 1, 0.95])  # leave room for title and legend
 
     # Save output file
-    filename = f"{region}_s-d-curve_comb_all_years_{transport_carrier}.png"
+    filename = f"{region}_s-d-curve_comb_all_years_{transport_carrier_supply}_{final_carrier_supply}_{wacc}.png"
     plt.savefig(os.path.join(output_path, filename), dpi=300, bbox_inches='tight')
     plt.close()
 
