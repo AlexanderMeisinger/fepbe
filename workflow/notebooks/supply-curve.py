@@ -8,8 +8,6 @@
 # 3) Add your scenario settings (cluster, resolution, wacc, wildcard, export)
 # 4) Do not forget the path_notebooks
 
-# Good to know
-# Two options available for the determination of marginal costs
 
 # Import packages
 import pypsa
