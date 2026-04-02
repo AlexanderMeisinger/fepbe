@@ -10,8 +10,8 @@ def interpolate_price_from_demand_curve(demand_slice, volume):
     Returns the interpolated demand price at a given import volume (PyPSA-Eur).
     """
 
-    df = demand_slice.sort_values("import_H2_demand").reset_index(drop=True)
-    q = df["import_H2_demand"].to_numpy()
+    df = demand_slice.sort_values("import_demand").reset_index(drop=True)
+    q = df["import_demand"].to_numpy()
     p = df["price"].to_numpy()
 
     # Below minimum → use first price
@@ -78,7 +78,7 @@ def calculate_budget_gap(
 
     # Determine maximum feasible import volume
     max_supply = supply_slice["import_demand"].sum()
-    max_demand = demand_slice["import_H2_demand"].max()
+    max_demand = demand_slice["import_demand"].max()
     max_volume = min(max_supply, max_demand)
 
     # Analyse marginal supply
@@ -106,17 +106,19 @@ def calculate_budget_gap(
 
 
 # Input data
-year = 2050 # 2030, 2050
-scenario = "config.GreenDeal" # config.GreenDeal, config.BAU
-carriers = ["LH2", "NH3", "MEOH"] # LH2, NH3, MEOH
-region = "EU" # "EU", "DE"
+year = 2050
+scenario = "config.GreenDeal"
+carriers = ["MEOH"] # LH2, NH3, MEOH
+final_carrier = "MEOH" # "NH3", "MEOH"
+wacc = 0.09
+region = "EU"
 
 df_all = None  
 
 for carrier in carriers:
     # Path of supply and demand curve need to be adapted
-    supply_curve = pd.read_csv(f"/home/alex-charly/SSD/H2GMA/Github/AP10/analyse-h2g-a-ap10/workflow/notebooks/supply-curve-analysis/fepbe/supply_curve_{carrier}_3H_inc_fepbe.csv", index_col=0)
-    demand_curve = pd.read_csv("/home/alex-charly/SSD/H2GMA/Github/AP10/analyse-h2g-a-ap10/workflow/notebooks/supply-curve-analysis/fepbe/demand_curve-fepbe-H2.csv", index_col=0)
+    supply_curve = pd.read_csv(f"/home/mea39219/analyse-h2g-a-ap10/workflow/notebooks/supply-curve-analysis/fepbe/supply_curve_{carrier}_{final_carrier}_{wacc}_3H_inc_fepbe.csv", index_col=0)
+    demand_curve = pd.read_csv(f"/home/mea39219/analyse-h2g-a-ap10/workflow/notebooks/supply-curve-analysis/fepbe/demand_curve-fepbe-{final_carrier}.csv", index_col=0)
 
     budget_gap = calculate_budget_gap(
         supply_curve=supply_curve,
@@ -137,4 +139,4 @@ for carrier in carriers:
         df_all = df_all.merge(budget_gap, on="import_volume", how="outer")
 
 # save final result
-df_all.to_csv(f"results/budget_gap/fepbe/{region}_budget_gap_{scenario}_{year}.csv", index=False)
+df_all.to_csv(f"/home/mea39219/analyse-h2g-a-ap10/workflow/results/budget_gap/fepbe/{region}_budget_gap_{scenario}_{'-'.join(carriers)}_{final_carrier}_{wacc}_{year}.csv", index=False)
