@@ -1,4 +1,13 @@
-# Analyse demand curves
+# Analyse supply and demand curves
+
+# How to use
+# 1) Addapt your settings at the beginning
+# 2) Selection of carrier can be done with following parameters:
+#    - carrier (H2, NH3, Methanol)
+# 3) Choose your year: 2030 and/or 2050
+# 4) Choose your region: Europe and/or Germany
+# 5) Do not forget the path_notebooks and results path in line 101
+
 
 # Import packages
 import pypsa
@@ -22,7 +31,7 @@ scenarios = {
 years = [2030, 2050]
 prices = np.arange(0, 201, 10)
 cluster = 39
-regions = ["DE", "EU"] #"DE", "EU"
+regions = ["EU"] #"DE", "EU"
 
 plots_region_labels = {
     "DE": "Germany",
@@ -53,10 +62,15 @@ def import_demand(pypsa_path, regions, price, year, scenario, carrier):
     - DataFrame with import carrier demand per region
     """
     import_demand_carrier = pd.DataFrame()
-    n = pypsa.Network(pypsa_path)
+    if os.path.exists(pypsa_path):
+        n = pypsa.Network(pypsa_path)
+    else:
+        print(f"File not found: Import demand for {scenario}-{year}-{carrier}-{price} is set to 0")
     
     for region in regions:
-        if region == "EU":
+        if not os.path.exists(pypsa_path):
+            df_import_carrier = 0 
+        elif region == "EU":
             df_import_carrier = n.statistics.energy_balance()
             idx = pd.IndexSlice
             try:
@@ -94,7 +108,7 @@ demand_curve = pd.DataFrame()
 for scenario in scenarios:
     for year in years:
         for price in prices:
-            path = f"/mnt/c/Users/mea39219/Downloads/pypsa-eur/{scenario}/base_s_{cluster}__{scenarios[scenario]}+{price}_{year}.nc"
+            path = f"/mnt/m/AP10-pypsa-eur/{scenario}/base_s_{cluster}__{scenarios[scenario]}+{price}_{year}.nc"
 
             # Get import demand in relation to import price
             import_demand_carrier = import_demand(
@@ -110,10 +124,3 @@ for scenario in scenarios:
 
 # Create csv file with demand curve data
 demand_curve.to_csv(f"{path_notebooks}/demand_curve-{prefix}-{carrier}.csv")
-
-
-
-
-
-
-
