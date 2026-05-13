@@ -37,7 +37,7 @@ Achieving climate neutrality requires large-scale production of green hydrogen a
    .../fepbe % conda env create -f workflow/pypsa-earth/envs/environment.yaml
    ```
    
-7. For running the optimisation one has to install the solver. We can recommend the open source `HiGHs` solver, see more details on solvers in the documentation of PyPSA-Eur and PyPSA-Earth. The optimisation in this work was performed using the commercial `Gurobi` solver.
+7. For running the optimisation one has to install the solver. We can recommend the open source `HiGHs` solver, see more details on solvers in the documentation of [PyPSA-Eur](https://pypsa-eur.readthedocs.io/en/latest/) and [PyPSA-Earth](https://pypsa-earth.readthedocs.io/en/latest/index.html). The optimisation in this work was performed using the commercial `Gurobi` solver.
 
 ## Run scenarios
 For starting the PyPSA-Eur model, run the following command:
