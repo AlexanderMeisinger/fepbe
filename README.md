@@ -45,6 +45,11 @@ For starting the PyPSA-Eur model, run the following command:
 .../fepbe/workflow/pypsa-eur % conda activate pypsa-eur
 ```
 ```bash
+% Quick check
+% snakemake --cores all --configfile .../fepbe/config/pypsa-eur/scenario-name.yaml -n
+```
+```bash
+% Full run
 % snakemake --cores all --configfile .../fepbe/config/pypsa-eur/scenario-name.yaml
 ```
 
@@ -53,6 +58,11 @@ For starting the PyPSA-Earth model, run the following command:
 .../fepbe/workflow/pypsa-earth % conda activate pypsa-earth
 ```
 ```bash
+% Quick check
+% snakemake --cores all solve_sector_networks --configfile .../fepbe/config/pypsa-earth/scenario-name.yaml -n
+```
+```bash
+% Full run
 % snakemake --cores all solve_sector_networks --configfile .../fepbe/config/pypsa-earth/scenario-name.yaml
 ```
 
