@@ -18,13 +18,13 @@ Achieving climate neutrality requires large-scale production of green hydrogen a
    .../some/path/without/spaces % cd fepbe
    ```
    
-3. The PyPSA-Eur python package requirements are curated in the `workflow/pypsa-eur/envs/environment.yaml` file of the pypsa-eur repository. The environment can be installed using conda or mamba:
+3. The PyPSA-Eur python package requirements are curated in the `workflow/pypsa-eur/envs/environment.yaml` file of the PyPSA-Eur repository. The environment can be installed using conda or mamba:
    
    ```bash
    .../fepbe % conda env create -f workflow/pypsa-eur/envs/environment.yaml
    ```
    
-5. The PyPSA-Earth python package requirements are curated in the `workflow/pypsa-earth/envs/environment.yaml` of the pypsa-earth respository. The environment can be installed using conda or mamba:
+5. The PyPSA-Earth python package requirements are curated in the `workflow/pypsa-earth/envs/environment.yaml` of the PyPSA-Earth respository. The environment can be installed using conda or mamba:
    
    ```bash
    .../fepbe % conda env create -f workflow/pypsa-earth/envs/environment.yaml
