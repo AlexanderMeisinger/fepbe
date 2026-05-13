@@ -5,6 +5,13 @@ This repository contains the entire scientific project for the paper "Bridging t
 ## Abstract
 Achieving climate neutrality requires large-scale production of green hydrogen and its derivatives. A persistent cost gap between producers and offtakers, however, impedes market growth. Our study couples European-African energy markets to analyse the role of the H2Global mechanism in bridging this gap, employing sector-coupled energy models. We find that no analysed pathway is cost-competitive in 2030, with African export costs (140-229 €/MWh) exceeding European willingness to pay (40-100 €/MWh) for hydrogen, ammonia, and methanol. The required annual funding ranges between 0.6 and 11.4 billion €. By 2050, early-stage support enables a market entry and the ramp-up of a hydrogen and Power-to-X economy: trade volumes of up to 236 TWh become cost-competitive, potentially reaching 450 TWh through reinvested savings. We conclude that, although ambitious European climate targets are the main reason for market ramp-up, the H2Global mechanism is a key and cost-effective instrument for overcoming the initial 'chicken-and-egg' problem, enabling market creation and ramp-up.
 
+## Respository structure
+- `config`: contains configuration files for PyPSA-Eur (Europe) and PyPSA-Earth (African countries). These configurations are adjusted according to the year (2030 or 2050) and the scenario settings.
+- `workflow/envs:` contains the environment used for PyPSA-Eur and PyPSA-Earth.
+- `workflow/notebooks:` contains the Jupyter notebooks and Python files used for the evaluation of results
+- `workflow/pypsa-eur:` contains the PyPSA-Eur branch used for this calculations. 
+- `workflow/pypsa-earth:` contains the PyPSA-Earth branch used for this calculations.
+
 ## Installation and usage
 1. Open your terminal at a location where you want to install the repository fepbe including it's subworkflows PyPSA-Eur and PyPSA-Earth. Type the following in your terminal to download the packages and the dependencies (pypsa-eur, pypsa-earth) from GitHub. Note that the tag `--recursive-submodules` is needed to automatically clone also the pypsa-eur and pypsa-earth dependencies.
    
@@ -31,13 +38,6 @@ Achieving climate neutrality requires large-scale production of green hydrogen a
    ```
    
 7. For running the optimisation one has to install the solver. We can recommend the open source `HiGHs` solver, see more details on solvers in the documentation of PyPSA-Eur and PyPSA-Earth. The optimisation in this work was performed using the commercial `Gurobi` solver.
-
-## Respository structure
-- `config`: contains configuration files for PyPSA-Eur (Europe) and PyPSA-Earth (African countries). These configurations are adjusted according to the year (2030 or 2050) and the scenario settings.
-- `workflow/envs:` contains the environment used for PyPSA-Eur and PyPSA-Earth.
-- `workflow/notebooks:` contains the Jupyter notebooks and Python files used for the evaluation of results
-- `workflow/pypsa-eur:` contains the PyPSA-Eur branch used for this calculations. 
-- `workflow/pypsa-earth:` contains the PyPSA-Earth branch used for this calculations.
 
 ## Run scenarios
 For starting the PyPSA-Eur model, run the following command:
