@@ -41,18 +41,22 @@ Achieving climate neutrality requires large-scale production of green hydrogen a
 
 ## Run scenarios
 For starting the PyPSA-Eur model, run the following command:
-
 ```bash
-.../fepbe/workflow/pypsa-eur % snakemake --cores all --configfile .../fepbe/config/pypsa-eur/scenario-name.yaml
+.../fepbe/workflow/pypsa-eur % conda activate pypsa-eur
+```
+```bash
+% snakemake --cores all --configfile .../fepbe/config/pypsa-eur/scenario-name.yaml
 ```
 
-For starting the PyPSA-Eur model, run the following command:
-
+For starting the PyPSA-Earth model, run the following command:
 ```bash
-.../fepbe/workflow/pypsa-earth % snakemake --cores all solve_sector_networks --configfile .../fepbe/config/pypsa-earth/scenario-name.yaml
+.../fepbe/workflow/pypsa-earth % conda activate pypsa-earth
+```
+```bash
+% snakemake --cores all solve_sector_networks --configfile .../fepbe/config/pypsa-earth/scenario-name.yaml
 ```
 
-Please follow the documentation of PyPSA-Eur (https://pypsa-eur.readthedocs.io/en/latest/) and PyPSA-Earth (https://pypsa-earth.readthedocs.io/en/latest/index.html) for more details. The estimated time to run one single optimisation is 120 mins on a standard laptop, the full set of paper results includes over 750 optimisations. To run the full set, a high-performance computer is recommended. Both models run independently of each other.
+Please follow the documentation of [PyPSA-Eur](https://pypsa-eur.readthedocs.io/en/latest/) and [PyPSA-Earth](https://pypsa-earth.readthedocs.io/en/latest/index.html) for more details. The estimated time to run one single optimisation is 120 mins on a standard laptop, the full set of paper results includes over 750 optimisations. To run the full set, a high-performance computer is recommended. Both models run independently of each other.
 
 ## Result and input data
 A dataset of the model results is available on [Zenodo](https://doi.org/10.5281/zenodo.19331304) under a CC-BY-4.0 license. Please refer to the documentation of [PyPSA-Eur](https://pypsa-eur.readthedocs.io/en/latest/) and [PyPSA-Earth](https://pypsa-earth.readthedocs.io/en/latest/index.html) for details on the input data.
