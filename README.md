@@ -69,7 +69,7 @@ For starting the PyPSA-Earth model, run the following command:
 Please follow the documentation of [PyPSA-Eur](https://pypsa-eur.readthedocs.io/en/latest/) and [PyPSA-Earth](https://pypsa-earth.readthedocs.io/en/latest/index.html) for more details. The estimated time to run one single optimisation is 120 mins on a standard laptop, the full set of paper results includes over 750 optimisations. To run the full set, a high-performance computer is recommended. Both models run independently of each other.
 
 ## Reproducibility
-The paper results and analysis can be reproduced using the notebooks in `workflow/notebooks` after succefully running the scenarios in `config`.
+The paper results and analysis can be reproduced using the notebooks in `workflow/notebooks` after successfully running the scenarios in `config`.
 
 ## Result and input data
 A dataset of the model results is available on [Zenodo](https://doi.org/10.5281/zenodo.19331304) under a CC-BY-4.0 license. Please refer to the documentation of [PyPSA-Eur](https://pypsa-eur.readthedocs.io/en/latest/) and [PyPSA-Earth](https://pypsa-earth.readthedocs.io/en/latest/index.html) for details on the input data.
